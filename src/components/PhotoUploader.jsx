@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
-function PhotoUploader({ onAdd }) {
+function PhotoUploader({ onAdd, onUpdate, onRemove }) {
   const fileInput = useRef(null)
   const [file, setFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [caption, setCaption] = useState('')
   const [error, setError] = useState('')
+  const [photoId, setPhotoId] = useState('')
 
   useEffect(() => {
     return () => {
@@ -19,21 +20,21 @@ function PhotoUploader({ onAdd }) {
 
     if (!selectedFile.type.startsWith('image/')) {
       setError('Choose an image file to preview.')
-      setFile(null)
       event.target.value = ''
       return
     }
 
     if (selectedFile.size > 10 * 1024 * 1024) {
       setError('Choose an image smaller than 10 MB.')
-      setFile(null)
       event.target.value = ''
       return
     }
 
+    if (photoId) onRemove(photoId)
     setError('')
     setPreviewUrl(URL.createObjectURL(selectedFile))
     setFile(selectedFile)
+    setPhotoId(onAdd(selectedFile))
   }
 
   const handleSubmit = (event) => {
@@ -43,18 +44,21 @@ function PhotoUploader({ onAdd }) {
       return
     }
 
-    onAdd(file, caption)
+    onUpdate(photoId, caption)
     setFile(null)
     setPreviewUrl('')
     setCaption('')
+    setPhotoId('')
     setError('')
     if (fileInput.current) fileInput.current.value = ''
   }
 
   const clearSelection = () => {
+    if (photoId) onRemove(photoId)
     setFile(null)
     setPreviewUrl('')
     setCaption('')
+    setPhotoId('')
     setError('')
     if (fileInput.current) fileInput.current.value = ''
   }
@@ -129,7 +133,7 @@ function PhotoUploader({ onAdd }) {
             <div className="uploader-submit-area">
               {file && (
                 <button className="share-button" type="submit">
-                  Add to gallery <span aria-hidden="true">→</span>
+                  {caption.trim() ? 'Save caption' : 'Done'} <span aria-hidden="true">→</span>
                 </button>
               )}
             </div>

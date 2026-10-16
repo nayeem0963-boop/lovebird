@@ -118,6 +118,53 @@
   gap: 1rem;
 }
 
+.signed-in-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.auth-loading {
+  color: var(--muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.sign-in-button {
+  min-height: 2.4rem;
+  border: 1px solid var(--coral);
+  border-radius: 8px;
+  padding: 0.5rem 0.95rem;
+  color: #fff;
+  background: var(--coral);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 680;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.sign-in-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--coral-dark);
+  background: var(--coral-dark);
+}
+
+.sign-out-button {
+  min-height: 2rem;
+  border-color: var(--line);
+  padding: 0.35rem 0.7rem;
+  color: #716b66;
+  background: #fff;
+  font-size: 0.68rem;
+}
+
+.sign-out-button:hover:not(:disabled) {
+  border-color: #e5d9d2;
+  color: var(--ink);
+  background: #f8f5f2;
+}
+
 .icon-button {
   position: relative;
   display: grid;
@@ -175,6 +222,7 @@
   width: 2rem;
   height: 2rem;
   font-size: 0.76rem;
+  object-fit: cover;
 }
 
 .chevron,
@@ -1068,6 +1116,251 @@
   font-size: 0.66rem;
 }
 
+.auth-modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(39 32 29 / 48%);
+  backdrop-filter: blur(5px);
+  animation: modal-backdrop-in 160ms ease-out both;
+}
+
+.auth-modal {
+  position: relative;
+  width: min(100%, 420px);
+  border: 1px solid rgb(255 255 255 / 75%);
+  border-radius: 20px;
+  padding: 2rem;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 24px 80px rgb(38 27 22 / 22%);
+  animation: modal-card-in 200ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #8d8580;
+  background: #f6f3f1;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-modal-close:hover:not(:disabled) {
+  color: var(--ink);
+  background: #eee9e5;
+}
+
+.auth-modal-brand {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--coral);
+  box-shadow: 0 5px 12px rgb(225 110 105 / 20%);
+  font-size: 1.5rem;
+}
+
+.auth-modal-eyebrow {
+  margin: 1.25rem 0 0.4rem;
+  color: #a17669;
+  font-size: 0.64rem;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.auth-modal h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.7rem;
+  font-weight: 730;
+  letter-spacing: -0.05em;
+}
+
+.auth-modal-description {
+  margin: 0.45rem 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.auth-message {
+  margin: 0.8rem 0;
+  border: 1px solid #f0d6d3;
+  border-radius: 9px;
+  padding: 0.7rem 0.8rem;
+  color: #a94743;
+  background: #fff5f3;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.google-auth-button {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px solid #e9e5e2;
+  border-radius: 9px;
+  color: #393430;
+  background: #fff;
+  font: inherit;
+  font-size: 0.79rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.google-auth-button:hover:not(:disabled) {
+  border-color: #d8d0cb;
+  background: #fbfaf9;
+}
+
+.google-auth-button:disabled,
+.auth-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-auth-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1.15rem 0;
+  color: #a39b95;
+  font-size: 0.68rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  height: 1px;
+  flex: 1;
+  background: #eeeae6;
+  content: '';
+}
+
+.auth-form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.auth-form label {
+  margin-top: 0.25rem;
+  color: #5c5651;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.auth-form input {
+  width: 100%;
+  min-height: 2.65rem;
+  border: 1px solid #e8e2de;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  color: var(--ink);
+  background: #fff;
+  font-size: 0.78rem;
+}
+
+.auth-form input::placeholder {
+  color: #aaa29d;
+}
+
+.auth-form input:focus {
+  border-color: #d7a5a0;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgb(225 110 105 / 10%);
+}
+
+.auth-form input:disabled {
+  background: #f8f6f4;
+}
+
+.auth-submit-button {
+  min-height: 2.75rem;
+  margin-top: 0.65rem;
+  border: 1px solid var(--coral);
+  border-radius: 8px;
+  color: #fff;
+  background: var(--coral);
+  font: inherit;
+  font-size: 0.79rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.auth-submit-button:hover:not(:disabled) {
+  border-color: var(--coral-dark);
+  background: var(--coral-dark);
+}
+
+.auth-switch {
+  margin: 1.1rem 0 0;
+  color: var(--muted);
+  font-size: 0.73rem;
+  text-align: center;
+}
+
+.auth-switch button {
+  border: 0;
+  padding: 0;
+  color: var(--coral-dark);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-switch button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -1108,6 +1401,10 @@ label:focus-within {
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 1rem;
     padding-inline: 1.2rem;
+  }
+
+  .signed-in-actions {
+    gap: 0.5rem;
   }
 
   .workspace {
@@ -1176,8 +1473,19 @@ label:focus-within {
   }
 
   .profile-name,
-  .profile-button .chevron {
+  .profile-button .chevron,
+  .sign-out-button {
     display: none;
+  }
+
+  .sign-in-button {
+    min-height: 2.2rem;
+    padding-inline: 0.7rem;
+    font-size: 0.7rem;
+  }
+
+  .auth-modal {
+    padding: 1.5rem;
   }
 
   .icon-button {

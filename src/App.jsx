@@ -1,125 +1,176 @@
 import { useEffect, useRef, useState } from 'react'
 import PhotoCard from './components/PhotoCard.jsx'
 import PhotoUploader from './components/PhotoUploader.jsx'
+import AuthModal from './components/AuthModal.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
+import { useAuth } from './context/useAuth.js'
 import './App.css'
 
 const initialPhotos = [
   {
     id: 'photo-1',
-    image: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85',
-    caption: 'A quiet morning in the mountains',
+    url: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85',
+    title: 'A quiet morning in the mountains',
     author: 'Sofia Chen',
     handle: '@sofiachen',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 128,
+    isLiked: false,
     color: 'sage',
     following: true,
   },
   {
     id: 'photo-2',
-    image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1000&q=85',
-    caption: 'Little reminders to stop and smell the flowers',
+    url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1000&q=85',
+    title: 'Little reminders to stop and smell the flowers',
     author: 'Amelia Rose',
     handle: '@ameliarose',
     avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 86,
+    isLiked: false,
     color: 'rose',
     following: true,
   },
   {
     id: 'photo-3',
-    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85',
-    caption: 'Taking the scenic route, always',
+    url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85',
+    title: 'Taking the scenic route, always',
     author: 'Noah Williams',
     handle: '@noahwanders',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 214,
+    isLiked: false,
     color: 'blue',
     following: true,
   },
   {
     id: 'photo-4',
-    image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1000&q=85',
-    caption: 'Slow afternoons and a good book',
+    url: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1000&q=85',
+    title: 'Slow afternoons and a good book',
     author: 'Jules Martin',
     handle: '@julesmakes',
     avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 52,
+    isLiked: false,
     color: 'amber',
     following: false,
   },
   {
     id: 'photo-5',
-    image: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85',
-    caption: 'Somewhere between here and nowhere',
+    url: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85',
+    title: 'Somewhere between here and nowhere',
     author: 'Theo Brooks',
     handle: '@theobrooks',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 173,
+    isLiked: false,
     color: 'blue',
     following: true,
   },
   {
     id: 'photo-6',
-    image: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85',
-    caption: 'Collecting the little moments',
+    url: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85',
+    title: 'Collecting the little moments',
     author: 'Maya Ellis',
     handle: '@mayaellis',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&h=96&q=80',
     likes: 97,
+    isLiked: false,
     color: 'rose',
     following: false,
   },
 ]
 
-function App() {
+function AppContent() {
   const [photos, setPhotos] = useState(initialPhotos)
   const [activeFilter, setActiveFilter] = useState('For you')
   const [search, setSearch] = useState('')
   const [notice, setNotice] = useState('')
-  const localPhotoUrls = useRef([])
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const localPhotoUrls = useRef(new Map())
+  const { user, loading: authLoading, logout } = useAuth()
+  const userName = user?.displayName || user?.email?.split('@')[0] || 'friend'
+  const userInitial = userName.trim().charAt(0).toUpperCase() || 'L'
 
   useEffect(() => () => {
     localPhotoUrls.current.forEach((url) => URL.revokeObjectURL(url))
   }, [])
 
-  const addPhoto = (file, caption) => {
-    const image = URL.createObjectURL(file)
-    localPhotoUrls.current.push(image)
+  const addPhoto = (file) => {
+    const url = URL.createObjectURL(file)
+    const id = crypto.randomUUID()
+    const title = file.name.replace(/\.[^.]+$/, '') || 'A new moment'
+    localPhotoUrls.current.set(id, url)
     setPhotos((current) => [
       {
-        id: crypto.randomUUID(),
-        image,
-        caption: caption.trim() || 'A new moment',
+        id,
+        url,
+        title,
         author: 'You',
         handle: '@you',
         avatar: '',
         likes: 0,
+        isLiked: false,
         color: 'rose',
         isLocal: true,
         following: false,
       },
       ...current,
     ])
-    setNotice('Your photo is now in the gallery.')
+    setNotice('Your photo is now in the gallery. Add a caption if you like.')
+    return id
+  }
+
+  const updatePhotoTitle = (photoId, title) => {
+    const nextTitle = title.trim()
+    if (!nextTitle) return
+
+    setPhotos((current) => current.map((photo) => (
+      photo.id === photoId ? { ...photo, title: nextTitle } : photo
+    )))
+    setNotice('Your photo caption has been updated.')
+  }
+
+  const removePhoto = (photoId) => {
+    const url = localPhotoUrls.current.get(photoId)
+    if (url) {
+      URL.revokeObjectURL(url)
+      localPhotoUrls.current.delete(photoId)
+    }
+    setPhotos((current) => current.filter((photo) => photo.id !== photoId))
+    setNotice('')
   }
 
   const toggleLike = (photoId) => {
     setPhotos((current) => current.map((photo) => (
       photo.id === photoId
-        ? { ...photo, liked: !photo.liked, likes: photo.likes + (photo.liked ? -1 : 1) }
+        ? {
+          ...photo,
+          isLiked: !photo.isLiked,
+          likes: photo.likes + (photo.isLiked ? -1 : 1),
+        }
         : photo
     )))
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      setNotice('You have been signed out.')
+    } catch (error) {
+      console.error('Unable to sign out of Lovebird.', error)
+      setNotice('We could not sign you out. Please try again.')
+    }
   }
 
   const visiblePhotos = photos.filter((photo) => {
     const matchesFilter = activeFilter === 'For you'
       || (activeFilter === 'Following' && photo.following)
-      || (activeFilter === 'Saved' && photo.liked)
-    const searchText = `${photo.caption} ${photo.author} ${photo.handle}`.toLowerCase()
+      || (activeFilter === 'Saved' && photo.isLiked)
+    const searchText = `${photo.title} ${photo.author} ${photo.handle}`.toLowerCase()
     return matchesFilter && searchText.includes(search.trim().toLowerCase())
   })
-  const savedCount = photos.filter((photo) => photo.liked).length
+  const savedCount = photos.filter((photo) => photo.isLiked).length
 
   return (
     <div className="lovebird-app">
@@ -156,13 +207,25 @@ function App() {
             </svg>
             <span className="notification-dot" />
           </span>
-          <div className="profile-button" aria-label="Your profile">
-            <span className="profile-avatar">J</span>
-            <span className="profile-name">Jamie</span>
-            <svg className="chevron" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="m4 6 4 4 4-4" />
-            </svg>
-          </div>
+          {authLoading ? (
+            <span className="auth-loading" role="status">Checking session…</span>
+          ) : user ? (
+            <div className="signed-in-actions">
+              <div className="profile-button" aria-label={`Signed in as ${user.email || userName}`}>
+                {user.photoURL
+                  ? <img className="profile-avatar" src={user.photoURL} alt="" referrerPolicy="no-referrer" />
+                  : <span className="profile-avatar">{userInitial}</span>}
+                <span className="profile-name">{user.displayName || user.email}</span>
+              </div>
+              <button className="sign-in-button sign-out-button" type="button" onClick={handleLogout}>
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button className="sign-in-button" type="button" onClick={() => setAuthModalOpen(true)}>
+              Sign in
+            </button>
+          )}
         </div>
       </header>
 
@@ -240,7 +303,7 @@ function App() {
           <section className="welcome-row" aria-labelledby="welcome-heading">
             <div>
               <p className="eyebrow">A LITTLE INSPIRATION, EVERY DAY</p>
-              <h1 id="welcome-heading">A little inspiration, Jamie <span aria-hidden="true">✦</span></h1>
+              <h1 id="welcome-heading">A little inspiration, {userName} <span aria-hidden="true">✦</span></h1>
               <p className="welcome-description">Fresh moments from people who see the world a little like you do.</p>
             </div>
             <div className="community-avatars" aria-label="Your community is sharing">
@@ -251,7 +314,11 @@ function App() {
             </div>
           </section>
 
-          <PhotoUploader onAdd={addPhoto} />
+          <PhotoUploader
+            onAdd={addPhoto}
+            onUpdate={updatePhotoTitle}
+            onRemove={removePhoto}
+          />
           {notice && (
             <p className="success-message" role="status">
               <span aria-hidden="true">✓</span> {notice}
@@ -310,7 +377,16 @@ function App() {
           </footer>
         </main>
       </div>
+      {authModalOpen && <AuthModal onClose={() => setAuthModalOpen(false)} />}
     </div>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

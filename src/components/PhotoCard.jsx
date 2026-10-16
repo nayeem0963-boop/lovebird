@@ -9,13 +9,13 @@ function PhotoCard({ photo, onToggleLike }) {
   return (
     <article className="photo-card">
       <div className={`photo-frame photo-frame-${photo.color}`}>
-        <img className="photo-image" src={photo.image} alt={photo.caption} loading="lazy" />
+        <img className="photo-image" src={photo.url} alt={photo.title} loading="lazy" />
         <button
-          className={photo.liked ? 'photo-like is-liked' : 'photo-like'}
+          className={photo.isLiked ? 'photo-like is-liked' : 'photo-like'}
           type="button"
           onClick={() => onToggleLike(photo.id)}
-          aria-label={photo.liked ? 'Unlike photo' : 'Like photo'}
-          aria-pressed={Boolean(photo.liked)}
+          aria-label={photo.isLiked ? 'Unlike photo' : 'Like photo'}
+          aria-pressed={photo.isLiked}
         >
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M16.8 4.6c-1.9-1.9-5-1.5-6.8.7-1.8-2.2-4.9-2.6-6.8-.7-2.2 2.2-1 5.7.8 7.6L10 18l6-5.8c1.8-1.9 3-5.4.8-7.6Z" />
@@ -25,7 +25,7 @@ function PhotoCard({ photo, onToggleLike }) {
       </div>
       <div className="photo-meta">
         <div className="photo-caption">
-          <p>{photo.caption}</p>
+          <p>{photo.title}</p>
           <span>{photo.likes} appreciations</span>
         </div>
         <div className="photo-author">
