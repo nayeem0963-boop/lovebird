@@ -19,6 +19,8 @@ const requiredConfigFields = [
 
 const missingConfigFields = requiredConfigFields.filter((field) => !firebaseConfig[field])
 
+
+
 export const firebaseConfigError = missingConfigFields.length
   ? `Firebase is not configured. Add these variables to your .env file: ${missingConfigFields
     .map((field) => `VITE_FIREBASE_${field.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}`)
