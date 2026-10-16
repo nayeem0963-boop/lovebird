@@ -8,6 +8,7 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
 const requiredConfigFields = [
@@ -19,12 +20,10 @@ const requiredConfigFields = [
 
 const missingConfigFields = requiredConfigFields.filter((field) => !firebaseConfig[field])
 
-
-
 export const firebaseConfigError = missingConfigFields.length
   ? `Firebase is not configured. Add these variables to your .env file: ${missingConfigFields
-    .map((field) => `VITE_FIREBASE_${field.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}`)
-    .join(', ')}.`
+      .map((field) => `VITE_FIREBASE_${field.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}`)
+      .join(', ')}.`
   : ''
 
 const firebaseApp = firebaseConfigError
