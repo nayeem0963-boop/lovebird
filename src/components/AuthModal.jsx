@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/useAuth.js'
 
 function getAuthErrorMessage(error) {
+  if (typeof error?.code === 'string' && error.code.startsWith('auth/api-key-not-valid')) {
+    return 'Firebase rejected the API key. Copy the web app config from the correct Firebase project into .env, check the API key restrictions, and restart the dev server.'
+  }
+
   switch (error.code) {
     case 'auth/email-already-in-use':
       return 'An account already exists for this email. Try signing in instead.'

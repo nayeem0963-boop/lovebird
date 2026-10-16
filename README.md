@@ -17,6 +17,11 @@ server and will disappear when the page is refreshed.
    hosts to **Authentication → Settings → Authorized domains**.
 3. Restart the Vite dev server after creating or changing `.env`.
 
+The `.env` file must contain `VITE_FIREBASE_*` `KEY=value` entries, not the
+JavaScript `firebaseConfig` object. If Firebase reports that the API key is
+invalid, copy the complete web app config from the same Firebase project and
+check that the API key restrictions allow Firebase Authentication.
+
 Firebase web configuration is intended to be included in browser apps; access
 to Firebase services must still be secured with Firebase Authentication and
 appropriate Firebase Security Rules. Never put service-account credentials in
