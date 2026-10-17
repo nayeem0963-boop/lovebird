@@ -6,6 +6,9 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { useAuth } from './context/useAuth.js'
 import './App.css'
 
+// test data from Unsplash, used for initial state and demo purposes
+console.log("ENV TEST:", import.meta.env.VITE_FIREBASE_API_KEY);
+
 const initialPhotos = [
   {
     id: 'photo-1',

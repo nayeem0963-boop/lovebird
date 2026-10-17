@@ -11,6 +11,7 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
+// 1. Define required fields first
 const requiredConfigFields = [
   'apiKey',
   'authDomain',
@@ -18,14 +19,17 @@ const requiredConfigFields = [
   'appId',
 ]
 
+// 2. Filter missing fields next
 const missingConfigFields = requiredConfigFields.filter((field) => !firebaseConfig[field])
 
+// 3. Define error string using the filtered result
 export const firebaseConfigError = missingConfigFields.length
   ? `Firebase is not configured. Add these variables to your .env file: ${missingConfigFields
       .map((field) => `VITE_FIREBASE_${field.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}`)
       .join(', ')}.`
   : ''
 
+// 4. Initialize app safely
 const firebaseApp = firebaseConfigError
   ? null
   : getApps().length > 0
